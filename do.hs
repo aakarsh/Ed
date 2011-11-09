@@ -1,3 +1,46 @@
+import System.IO
+import System.IO.Error
+
+{-
+   Activation Records :
+   Euclid : There is no royal road to geometry
+-}
+data Point = Pt {pointx ,pointy ::Double}
+pointDistance (Pt x1 y1) (Pt x2 y2)  = sqrt $ (x1 - x2)^2 +  (y1 -y2)^2
+instance Eq Point where 
+  (==) (Pt x1 y1) (Pt x2 y2) = (x1 == x2) && (y1 == y2 )
+
+data Circle = Circle {
+  radius:: Double,
+  origin ::Point
+}
+-- What about triangles where we can construct invalid types of triangles
+-- Shouldnt I be able to specify some constraints onthe kinds of triangle i can create
+{-
+data Triangle = Triangle {
+   point1,point2,point3 :: Point
+}
+-}
+circleEq (Circle r (Pt {pointx = x, pointy = y})) = "(x-"++show x++") ^2 "++"+"++"(y-"++show y++" )^2 = "++(show  $ r^2)                                                   
+cricleArea c = pi * (radius c)^2
+cirlceCircumference c  =  2 * pi * (radius c)
+circlesCoincide c1 c2 = (origin c1 == origin c2)
+-- we consider coincidence not to be an intersection
+circlesIntersect c1 c2 = (not ((radius c1 /= radius c2) && (circlesCoincide c1 c2)))  && (not ((pointDistance (origin c1) (origin c2)) > (radius c1 + radius c2)))
+
+-- Determine if two circles intersect.
+--intersection_points c1 c2 =
+
+instance Show Circle where              
+  show = circleEq 
+
+instance Eq Circle where
+  (==) (Circle r1 (Pt {pointx = x1 , pointy = y1}))  (Circle r2 (Pt {pointx = x2, pointy= y2})) =  r1 == r2 && x1 == x2 && y1 == y2
+  
+instance Ord Circle where  
+  (>) (Circle r1 _ ) (Circle r2 _  )  = r1 > r2
+  (<) (Circle r1 _ ) (Circle r2 _  )  = r1 < r2
+
 type CardHolder = String
 type CardNumber = String
 type Address = [String]
@@ -21,10 +64,7 @@ data Customer = Customer {
     , customerAddress :: Address
     } deriving (Show)
 
-
-
 mylen [] = 0
--- mylen :: [t] -> t1
 mylen (x:xs) = 1+ mylen xs
 
 mysum [] = 0
@@ -32,17 +72,142 @@ mysum (x:xs) = x + (mysum xs)
 
 mean [] = 0
 mean x = (mysum x) / fromIntegral (length x)
--- tries to covert a simple list such as [1,2,3] to a palindorme list such as [1,2,3,2,1]  
--- [1,2] [1,2,1]
 
-surround e [] = [e]
-surround e l = [e]++l++[e]
-  
--- try palinify "malay" XD
+surround e [] = [e,e]
+surround e l = [e]++l++[e]  
+
 palinify [] = []
 palinify (x:xs)  = surround x (palinify xs)
 
+
+
+
+
+-- how does this work.
+--ispalin [] = True
+--ispalin (x:xs:y:[]) = (x==y) and (ispalin xs)
+                   
 myfact n    
   | n == 0    = 1
   | otherwise = n * myfact(n-1)
 -- ghci> let cities = Book 173 "Use of Weapons" ["Iain M. Banks"]         
+
+
+myDrop n xs = if n <= 0  || null xs                 
+              then xs
+              else  myDrop (n-1) (tail xs)
+                    
+myHead n [] = [] 
+myHead n (x:xs) = if n <= 0   
+                  then [] 
+                  else x : (myHead (n-1) xs)
+
+
+squares' n i
+  | i >= n = (n*n):[]
+  | otherwise = (i*i) : (squares' n (i+1))
+
+
+square n = n^2
+p_map p = map (\x -> x^p)            
+sum' = foldl (\x y -> x + y) 0 
+
+
+abs' x = if x < 0 
+           then -x
+           else x
+
+--length is messed up returns Int                
+length' l  = fromIntegral $ length l
+mean' l =  (sum l) / (length' l)
+
+--so
+-- (defun math:median(l)
+--   (let* ((l (sort  l '< ))
+--          (len (length l)) 
+--          (middle  (1- (ceiling (/ len 2.0 ) ))))
+--     (if (evenp  len)
+--         (/ (+ (nth middle l) (nth (1+ middle) l)) 2.0)
+--       (nth middle l))))
+--
+--median [] = 0
+--median l  =  sort 
+  
+  
+standard_deviation [] =  0 
+standard_deviation l = let mean = mean' l
+                           len = length' l
+                           mean_diff x = (x-mean)^2
+                       in
+                        sqrt $ (sum $ map mean_diff l )  /  len
+
+
+
+range l = maximum l  - minimum l
+
+fib' 0 = 1
+fib' 1 = 1 
+fib' n = fib' (n-1) + fib' (n-2)
+
+fib = 1:1 : [a+b | (a,b) <- zip fib (tail fib) ]
+ones = 1 : ones
+
+number_sequence_from   n = n : number_sequence_from (n+1)
+number_sequence = number_sequence_from 1
+sign x |  x < 0   = -1
+       |  x == 0  = 0           
+       |  x > 0   = 1
+hang = hang
+
+data Tree a = Leaf a | Branch (Tree a) (Tree a)
+--  fmap f (Branch r l) = (fmap f r ) (fmap f l)                
+instance Functor Tree where
+  fmap f (Leaf v) = Leaf (f v )                    
+  fmap f (Branch l r)= Branch (fmap f l) (fmap f r)
+  
+
+readName = do putStr "Enter name : "
+              name <- getLine
+              return name
+               
+yesNo prompt = do putStr $ prompt ++ " [y/n] : "
+                  c <-getLine
+                  return (c == "y")                  
+                  
+greet = do yes <- (yesNo "Have a name")
+           if yes 
+             then do name <- (readName)
+                     putStr $ "Hey! "++ name ++ "\n"                                     
+             else return ()                  
+--errorHandler
+-- cat filename = 
+--   do h <- catch (openFile filename ReadMode) errorHandler
+--      content <- hGetContents h
+--      putStr $ content ++ "\n"                    
+--   where 
+--     errorHandler = (\_ -> do putStrLn ("Cannot Open File "++ filename ++ "\n")
+--                              cat filename)
+cat filename = 
+  do h <- (openFile filename ReadMode) 
+     content <- hGetContents h
+     putStr $ content ++ "\n"                    
+
+
+os_messages = cat "/var/log/messages"
+os_proc_vmstat = cat "/proc/vmstat"
+
+main :: IO()  
+main = greet
+
+
+
+--fibs_from f1 f2  = fibs_from
+-- mode l = ?
+-- median l = ?
+{-- 
+Some gap in knowledge here 
+instance Show Tree a where
+  show t = case t of 
+               (Leaf v) -> "("++ show v ++")"
+               (Branch l r) -> "("++show l++ "," ++ show r ")"
+--}

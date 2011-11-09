@@ -1,0 +1,35 @@
+** Project Ideas
+*** Implementing Scheme in Haskell 48 hrs
+*** Port GNU Go to Haskell
+*** Do CS 131 projects in haskell
+*** Parsing Genome Data and doing statistical stuff on it
+*** Output 3d chemical objects from chemical spectra.
+*** Life is a playground where learning is endless.
+*** Replace  wicd with haskell
+*** Can you write pong and or spacewars in haskell ? If it is such a great platform it should not be hard
+*** Try to start with baby steps
+*** A journey of a thousand miles begins with a single step.
+*** Create a list of programming gotchas
+*** Create a Video Tutorial of haskell which goes over a couple of haskell books (some how video tutorials are better)
+**** Real World Haskell
+**** Haskell Tutorial 98
+**** Introduction To Functional Programming
+*** Improve haskell/ide support?
+** Quesitons
+*** What is the performance effects consequences of haskell
+*** God GC! Pointers to thunks - darcs -> git
+*** Strictness flags and laziness -> crash and burn haskell
+*** Tablet based handwriting recognition is a good thing to have. Even if it is user subjugating
+*** Distinguishing evils is important (You need to balance the lesser of two evils)
+*** Stallman is not able to balance lesser of two evils. For him evil is evil no matter what.
+*** i.e Evil taint is enough -
+*** Shouldnt software reach some threshold of importance before it must be given up for free.
+*** Porting awk to haskell will mean you can call it hawk
+*** Learn how to look up documentation in haskell - offline docs
+*** Write some thing to show documentation at point in haskell
+*** 
+
+** Notes
+*** Being able to create list of imperative actions and then sequence them is quite interesting and powerful -- is it equivalent to macros ?
+*** Haskell has a lot of warts that make it easy for beginners to stumble badly , python should still be a beginners first language.
+
