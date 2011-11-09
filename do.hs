@@ -179,19 +179,26 @@ greet = do yes <- (yesNo "Have a name")
              then do name <- (readName)
                      putStr $ "Hey! "++ name ++ "\n"                                     
              else return ()                  
---errorHandler
--- cat filename = 
---   do h <- catch (openFile filename ReadMode) errorHandler
---      content <- hGetContents h
---      putStr $ content ++ "\n"                    
---   where 
---     errorHandler = (\_ -> do putStrLn ("Cannot Open File "++ filename ++ "\n")
---                              cat filename)
-cat filename = 
-  do h <- (openFile filename ReadMode) 
+                  
+cat filename = withFile filename ReadMode hCat
+  where  hCat h  = do content <- hGetContents h
+                      putStr $ content ++"\n"
+
+wc filename = withFile filename ReadMode hWc
+  where hWc h = do content <- hGetContents h
+                   return $ length $ lines content
+cat1 filename = 
+  do h <- catch (openFile filename ReadMode) errorHandler
      content <- hGetContents h
      putStr $ content ++ "\n"                    
+  where 
+    errorHandler = (\e -> do ioError (userError ("Cannot Open File "++ filename ++ ", you fool !\n" ++ show e)))
 
+
+-- cat filename = 
+--   do h <- (openFile filename ReadMode) 
+--      content <- hGetContents h
+--      putStr $ content ++ "\n"                    
 
 os_messages = cat "/var/log/messages"
 os_proc_vmstat = cat "/proc/vmstat"
@@ -200,10 +207,9 @@ main :: IO()
 main = greet
 
 
-
 --fibs_from f1 f2  = fibs_from
 -- mode l = ?
--- median l = ?
+--median l =  ((fromIntegral (length l)) / 2)
 {-- 
 Some gap in knowledge here 
 instance Show Tree a where
