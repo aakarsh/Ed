@@ -1,3 +1,4 @@
+module Do where 
 import System.IO
 import System.IO.Error
 
@@ -184,9 +185,19 @@ cat filename = withFile filename ReadMode hCat
   where  hCat h  = do content <- hGetContents h
                       putStr $ content ++"\n"
 
+-- learn how to use shows clause
+number_lines content = number_lines' (lines content) 1
+  where 
+    number_lines' [] a = []
+    number_lines' (l:ls) a = ((show a ) ++ " : "++ l ): number_lines' ls (a+1)
+
+-- some suble bug here always gives me size 0 instead of telling me the true type.
 wc filename = withFile filename ReadMode hWc
   where hWc h = do content <- hGetContents h
-                   return $ length $ lines content
+                   putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
+                   
+--return $ (length $  content)
+
 cat1 filename = 
   do h <- catch (openFile filename ReadMode) errorHandler
      content <- hGetContents h
@@ -194,7 +205,8 @@ cat1 filename =
   where 
     errorHandler = (\e -> do ioError (userError ("Cannot Open File "++ filename ++ ", you fool !\n" ++ show e)))
 
-
+-- do { contents <- ((openFile "/etc/passwd" ReadMode) >>= hGetContents ); putStr contents}
+-- do { contents <- ((openFile "/etc/passwd" ReadMode) >>= hGetContents ); putStr $ "Length : "++ (show $ (length contents)) ++  "\n"}
 -- cat filename = 
 --   do h <- (openFile filename ReadMode) 
 --      content <- hGetContents h

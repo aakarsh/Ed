@@ -26,10 +26,17 @@
 *** Shouldnt software reach some threshold of importance before it must be given up for free.
 *** Porting awk to haskell will mean you can call it hawk
 *** Learn how to look up documentation in haskell - offline docs
-*** Write some thing to show documentation at point in haskell
+*** Write some thing to show documentation at point in haskellrsion fo
 *** 
-
 ** Notes
 *** Being able to create list of imperative actions and then sequence them is quite interesting and powerful -- is it equivalent to macros ?
 *** Haskell has a lot of warts that make it easy for beginners to stumble badly , python should still be a beginners first language.
-
+*** Where as the type system should be something which should be reason about your program
+*** and tell you lots of things about it , ala quickcheck in haskell the lack of tools is quite obvious. May be this is simply a reflection of the immaturity of the languate.
+*** Haskell makes it so easy to write inefficient code it is ridiculous.
+*** C it is crystal clear what your code is doing where as  haskell it may be copying , garbage collecting to high heaven.
+*** One thing is clear though you will be be able to write "imperative code whether you like it or not" so it might be a good language to discipline yourself in.
+*** is it just me or putStrLn works differently inside ghc vs ghci
+*** I like how emacs help system is integrated right into the way that elisp is defined. wish haskell could do something similar.
+*** I wish one there was someone who wrote some version of haskell shell the same way someone has written a bash shell spase syntax makes it a powerful env.
+*** 
