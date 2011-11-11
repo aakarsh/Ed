@@ -209,8 +209,6 @@ number_lines content = number_lines' (lines content) 1
 wc filename = withFile filename ReadMode hWc
   where hWc h = do content <- hGetContents h
                    putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
-                   
---return $ (length $  content)
 
 cat1 filename = 
   do h <- catch (openFile filename ReadMode) errorHandler
