@@ -1,20 +1,25 @@
 module Do where 
+
+import qualified Data.Map as M
+import Data.List
 import System.IO
 import System.IO.Error
 
 {-
-   Activation Records :
    Euclid : There is no royal road to geometry
 -}
 data Point = Pt {pointx ,pointy ::Double}
-pointDistance (Pt x1 y1) (Pt x2 y2)  = sqrt $ (x1 - x2)^2 +  (y1 -y2)^2
+
 instance Eq Point where 
   (==) (Pt x1 y1) (Pt x2 y2) = (x1 == x2) && (y1 == y2 )
+
+pointDistance (Pt x1 y1) (Pt x2 y2)  = sqrt $ (x1 - x2)^2 +  (y1 -y2)^2
 
 data Circle = Circle {
   radius:: Double,
   origin ::Point
 }
+
 -- What about triangles where we can construct invalid types of triangles
 -- Shouldnt I be able to specify some constraints onthe kinds of triangle i can create
 {-
@@ -22,13 +27,15 @@ data Triangle = Triangle {
    point1,point2,point3 :: Point
 }
 -}
+
 circleEq (Circle r (Pt {pointx = x, pointy = y})) = "(x-"++show x++") ^2 "++"+"++"(y-"++show y++" )^2 = "++(show  $ r^2)                                                   
 cricleArea c = pi * (radius c)^2
+
 cirlceCircumference c  =  2 * pi * (radius c)
 circlesCoincide c1 c2 = (origin c1 == origin c2)
+
 -- we consider coincidence not to be an intersection
 circlesIntersect c1 c2 = (not ((radius c1 /= radius c2) && (circlesCoincide c1 c2)))  && (not ((pointDistance (origin c1) (origin c2)) > (radius c1 + radius c2)))
-
 -- Determine if two circles intersect.
 --intersection_points c1 c2 =
 
@@ -81,9 +88,6 @@ palinify [] = []
 palinify (x:xs)  = surround x (palinify xs)
 
 
-
-
-
 -- how does this work.
 --ispalin [] = True
 --ispalin (x:xs:y:[]) = (x==y) and (ispalin xs)
@@ -121,28 +125,38 @@ abs' x = if x < 0
 --length is messed up returns Int                
 length' l  = fromIntegral $ length l
 mean' l =  (sum l) / (length' l)
+mean_2 l1 l2 = mean' [l1,l2]
 
---so
--- (defun math:median(l)
---   (let* ((l (sort  l '< ))
---          (len (length l)) 
---          (middle  (1- (ceiling (/ len 2.0 ) ))))
---     (if (evenp  len)
---         (/ (+ (nth middle l) (nth (1+ middle) l)) 2.0)
---       (nth middle l))))
---
---median [] = 0
---median l  =  sort 
-  
-  
+{-- Lots of stumbling blocks with length being int.--}
+median [] = error "Empty list has no median"
+median l  =  let sorted_list = sort l 
+                 len =  (length sorted_list)                        
+                 middle = floor $ fromIntegral len  / 2
+             in
+              if even len
+              then 
+                mean_2 (sorted_list !! (middle - 1) ) (sorted_list !! (middle))
+              else
+                sorted_list !! middle 
+{-- 
+Does not work very well for multimodal
+--}
+mode :: Ord a => [a] -> a
+mode l = let frequency_map = M.toList (mode' l M.empty )
+             frequency_compare y1 y2 = compare (snd y1) (snd y2)
+         in 
+          fst $ maximumBy frequency_compare frequency_map
+  where
+    mode' [] freq_map = freq_map
+    mode' (l:ls) freq_map = mode' ls (M.insertWith' (+) l 1 freq_map)
+
+
 standard_deviation [] =  0 
 standard_deviation l = let mean = mean' l
                            len = length' l
                            mean_diff x = (x-mean)^2
                        in
                         sqrt $ (sum $ map mean_diff l )  /  len
-
-
 
 range l = maximum l  - minimum l
 
