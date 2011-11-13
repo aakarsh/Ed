@@ -1,9 +1,15 @@
+{-
+   Yoda: Do or do not there is no try.
+-}
 module Do (
-  primes
+  primes,
+  parseCSV,
   ) where 
 
 import qualified Data.Map as M
 import Common
+import Geometry
+import Statistics
 import Data.List
 import System.IO
 import System.IO.Error
@@ -40,49 +46,6 @@ remainingCells = (char ',' >> cells)
 --eol = string "\n" 
 
 
-{-
-   Euclid : There is no royal road to geometry
--}
-data Point = Pt {pointx ,pointy ::Double}
-
-instance Eq Point where 
-  (==) (Pt x1 y1) (Pt x2 y2) = (x1 == x2) && (y1 == y2 )
-
-pointDistance (Pt x1 y1) (Pt x2 y2)  = sqrt $ (x1 - x2)^2 +  (y1 -y2)^2
-
-data Circle = Circle {
-  radius:: Double,
-  origin ::Point
-}
-
--- What about triangles where we can construct invalid types of triangles
--- Shouldnt I be able to specify some constraints onthe kinds of triangle i can create
-{-
-data Triangle = Triangle {
-   point1,point2,point3 :: Point
-}
--}
-
-circleEq (Circle r (Pt {pointx = x, pointy = y})) = "(x-"++show x++") ^2 "++"+"++"(y-"++show y++" )^2 = "++(show  $ r^2)                                                   
-cricleArea c = pi * (radius c)^2
-
-cirlceCircumference c  =  2 * pi * (radius c)
-circlesCoincide c1 c2 = (origin c1 == origin c2)
-
--- we consider coincidence not to be an intersection
-circlesIntersect c1 c2 = (not ((radius c1 /= radius c2) && (circlesCoincide c1 c2)))  && (not ((pointDistance (origin c1) (origin c2)) > (radius c1 + radius c2)))
--- Determine if two circles intersect.
---intersection_points c1 c2 =
-
-instance Show Circle where              
-  show = circleEq 
-
-instance Eq Circle where
-  (==) (Circle r1 (Pt {pointx = x1 , pointy = y1}))  (Circle r2 (Pt {pointx = x2, pointy= y2})) =  r1 == r2 && x1 == x2 && y1 == y2
-  
-instance Ord Circle where  
-  (>) (Circle r1 _ ) (Circle r2 _  )  = r1 > r2
-  (<) (Circle r1 _ ) (Circle r2 _  )  = r1 < r2
 
 type CardHolder = String
 type CardNumber = String
@@ -157,44 +120,6 @@ abs' x = if x < 0
            then -x
            else x
 
---length is messed up returns Int                
-length' l  = fromIntegral $ length l
-mean' l =  (sum l) / (length' l)
-mean_2 l1 l2 = mean' [l1,l2]
-
-{-- Lots of stumbling blocks with length being int.--}
-median [] = error "Empty list has no median"
-median l  =  let sorted_list = sort l 
-                 len =  (length sorted_list)                        
-                 middle = floor $ fromIntegral len  / 2
-             in
-              if even len
-              then 
-                mean_2 (sorted_list !! (middle - 1) ) (sorted_list !! (middle))
-              else
-                sorted_list !! middle 
-{-- 
-Does not work very well for multimodal
---}
-mode :: Ord a => [a] -> a
-mode l = let frequency_map = M.toList (mode' l M.empty )
-             frequency_compare y1 y2 = compare (snd y1) (snd y2)
-         in 
-          fst $ maximumBy frequency_compare frequency_map
-  where
-    mode' [] freq_map = freq_map
-    mode' (l:ls) freq_map = mode' ls (M.insertWith' (+) l 1 freq_map)
-
-
-standard_deviation [] =  0 
-standard_deviation l = let mean = mean' l
-                           len = length' l
-                           mean_diff x = (x-mean)^2
-                       in
-                        sqrt $ (sum $ map mean_diff l )  /  len
-
-range l = maximum l  - minimum l
-
 fib' 0 = 1
 fib' 1 = 1 
 fib' n = fib' (n-1) + fib' (n-2)
@@ -266,38 +191,15 @@ os_proc_vmstat = cat "/proc/vmstat"
 main :: IO()  
 main = greet
 
---returns an function which will apply f n times to its value
-ntimes f n = fold_i_last (\previous _ -> f previous ) [1..n]
-  where
-    fold_i_last folder = flip $ foldl folder
 
-applyTwice f = ntimes f 2
-
--- if we want to build prime number list we 
---need to  make sure number is not divisible till 
--- ceil (sqrt n)
--- so we want to build a filter function
--- which short circuits till sqrt of n
-non_divisble a b =  (a `mod` b ) /=0
---seive i [] = []
---seive i l  = filter l 
-ndrop n [] = []
-ndrop 1 (l:ls) = ls
-ndrop n (l:ls) = l : ndrop (n-1) ls
-
-drop_every n l =  drop_every' n l 1
-  where  drop_every' n [] i = []
-         drop_every' n (l:ls) i = if i == n
-                                  then drop_every' n ls 1
-                                  else l:(drop_every' n ls (i+1))
-
-
-{- Prime numbers are recursive in the sense
+{- 
+Prime numbers are recursive in the sense
 that their previous input is everything 
 that got missed by their current.
 Seive Works by dropping ever nth where nths 
 is the previous run of sieve on the input
-the seive is done when -}
+the seive is done when 
+-}
 mark (a,_)=(a,True)
 mark_every n l = fevery mark n l
 
@@ -306,11 +208,9 @@ filterBoolList l = filter (\(x,y)-> y) l
 toBoolList = zipWithBool
 fromBoolList = map (\(x,y) -> x ) 
 notBoolList =  map (\(x,y) -> (x,(not y)))
-
 mark_composites [] = []
 mark_composites list@(l:ls) = l : mark_composites (mark_every (fst l) ls)
 primes l  = fromBoolList (filterBoolList(notBoolList (mark_composites (toBoolList l))))
-
 
 collatz :: (Integral a) => a -> [a]
 collatz 1 = [1]
@@ -318,8 +218,8 @@ collatz n = n: (collatz (next n))
   where next n 
           | odd n = n*3+1
           | otherwise = n `div` 2
-                        
-                        
+
+
 
 -- back tracking and propagation networks.
 -- the issue is drop every is issuing drops on new size list

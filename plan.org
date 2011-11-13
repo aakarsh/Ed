@@ -1,4 +1,5 @@
 ** Project Ideas
+*** Can we write a elisp interpretor in haskell? - then run elisp inside of yi 
 *** Learn how to look up documentation in haskell - offline docs
 *** Write some thing to show documentation at point in haskellrsion fo
 
