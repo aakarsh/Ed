@@ -1,9 +1,44 @@
-module Do where 
+module Do (
+  primes
+  ) where 
 
 import qualified Data.Map as M
+import Common
 import Data.List
 import System.IO
 import System.IO.Error
+import Text.ParserCombinators.Parsec
+
+--parseCSV :: String -> Either ParseError [[[String]]]
+parseCSV input = parse csvFile "(unknown)" input
+csvFile = do result <- many line
+             eof
+             return result
+
+eol = do char '\n'
+         char '\r' <|> return '\n'
+  
+
+line::GenParser Char st [String]
+line = do result <- cells             
+          eol
+          return result
+          
+cellContent::GenParser Char st String
+cellContent = many (noneOf ",\n")
+
+cells:: GenParser Char st [String] 
+cells = do first <- cellContent 
+           next <- remainingCells
+           return (first:next)
+
+remainingCells:: GenParser Char st [String] 
+remainingCells = (char ',' >> cells) 
+                 <|> (return [])
+
+--eol::GenParser Char st Char
+--eol = string "\n" 
+
 
 {-
    Euclid : There is no royal road to geometry
@@ -210,6 +245,7 @@ wc filename = withFile filename ReadMode hWc
   where hWc h = do content <- hGetContents h
                    putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
 
+
 cat1 filename = 
   do h <- catch (openFile filename ReadMode) errorHandler
      content <- hGetContents h
@@ -230,7 +266,65 @@ os_proc_vmstat = cat "/proc/vmstat"
 main :: IO()  
 main = greet
 
+--returns an function which will apply f n times to its value
+ntimes f n = fold_i_last (\previous _ -> f previous ) [1..n]
+  where
+    fold_i_last folder = flip $ foldl folder
 
+applyTwice f = ntimes f 2
+
+-- if we want to build prime number list we 
+--need to  make sure number is not divisible till 
+-- ceil (sqrt n)
+-- so we want to build a filter function
+-- which short circuits till sqrt of n
+non_divisble a b =  (a `mod` b ) /=0
+--seive i [] = []
+--seive i l  = filter l 
+ndrop n [] = []
+ndrop 1 (l:ls) = ls
+ndrop n (l:ls) = l : ndrop (n-1) ls
+
+drop_every n l =  drop_every' n l 1
+  where  drop_every' n [] i = []
+         drop_every' n (l:ls) i = if i == n
+                                  then drop_every' n ls 1
+                                  else l:(drop_every' n ls (i+1))
+
+
+{- Prime numbers are recursive in the sense
+that their previous input is everything 
+that got missed by their current.
+Seive Works by dropping ever nth where nths 
+is the previous run of sieve on the input
+the seive is done when -}
+mark (a,_)=(a,True)
+mark_every n l = fevery mark n l
+
+zipWithBool = zipWith (flip (,)) (repeat False)
+filterBoolList l = filter (\(x,y)-> y) l
+toBoolList = zipWithBool
+fromBoolList = map (\(x,y) -> x ) 
+notBoolList =  map (\(x,y) -> (x,(not y)))
+
+mark_composites [] = []
+mark_composites list@(l:ls) = l : mark_composites (mark_every (fst l) ls)
+primes l  = fromBoolList (filterBoolList(notBoolList (mark_composites (toBoolList l))))
+
+
+collatz :: (Integral a) => a -> [a]
+collatz 1 = [1]
+collatz n = n: (collatz (next n))
+  where next n 
+          | odd n = n*3+1
+          | otherwise = n `div` 2
+                        
+                        
+
+-- back tracking and propagation networks.
+-- the issue is drop every is issuing drops on new size list
+-- while we want to drop on the index position of the old list
+  
 --fibs_from f1 f2  = fibs_from
 -- mode l = ?
 --median l =  ((fromIntegral (length l)) / 2)
