@@ -18,7 +18,7 @@ import Common
 import Data.List
 import System.IO
 import System.IO.Error
-import Text.ParserCombinators.Parsec
+
 
 
 data Point = Pt {pointx ,pointy::Double}

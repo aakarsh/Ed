@@ -1,18 +1,20 @@
 {-
    Yoda: Do or do not there is no try.
 -}
-module Do (
-  primes,
-  parseCSV,
-  ) where 
+module Do where 
 
 import qualified Data.Map as M
 import Common
+import MarkedList
+import Fs
 import Geometry
 import Statistics
 import Data.List
 import System.IO
-import System.IO.Error
+import System.Cmd
+import System.Directory
+import Control.Exception
+{-
 import Text.ParserCombinators.Parsec
 
 --parseCSV :: String -> Either ParseError [[[String]]]
@@ -42,6 +44,7 @@ remainingCells:: GenParser Char st [String]
 remainingCells = (char ',' >> cells) 
                  <|> (return [])
 
+-}
 --eol::GenParser Char st Char
 --eol = string "\n" 
 
@@ -154,30 +157,6 @@ greet = do yes <- (yesNo "Have a name")
              then do name <- (readName)
                      putStr $ "Hey! "++ name ++ "\n"                                     
              else return ()                  
-                  
-cat filename = withFile filename ReadMode hCat
-  where  hCat h  = do content <- hGetContents h
-                      putStr $ content ++"\n"
-
--- learn how to use shows clause
-number_lines content = number_lines' (lines content) 1
-  where 
-    number_lines' [] a = []
-    number_lines' (l:ls) a = ((show a ) ++ " : "++ l ): number_lines' ls (a+1)
-
--- some suble bug here always gives me size 0 instead of telling me the true type.
-wc filename = withFile filename ReadMode hWc
-  where hWc h = do content <- hGetContents h
-                   putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
-
-
-cat1 filename = 
-  do h <- catch (openFile filename ReadMode) errorHandler
-     content <- hGetContents h
-     putStr $ content ++ "\n"                    
-  where 
-    errorHandler = (\e -> do ioError (userError ("Cannot Open File "++ filename ++ ", you fool !\n" ++ show e)))
-
 -- do { contents <- ((openFile "/etc/passwd" ReadMode) >>= hGetContents ); putStr contents}
 -- do { contents <- ((openFile "/etc/passwd" ReadMode) >>= hGetContents ); putStr $ "Length : "++ (show $ (length contents)) ++  "\n"}
 -- cat filename = 
@@ -200,17 +179,14 @@ Seive Works by dropping ever nth where nths
 is the previous run of sieve on the input
 the seive is done when 
 -}
-mark (a,_)=(a,True)
-mark_every n l = fevery mark n l
 
-zipWithBool = zipWith (flip (,)) (repeat False)
-filterBoolList l = filter (\(x,y)-> y) l
-toBoolList = zipWithBool
-fromBoolList = map (\(x,y) -> x ) 
-notBoolList =  map (\(x,y) -> (x,(not y)))
+{-
+   Believe it or not this implements prime seive we mark all composites up the primes.
+-}
 mark_composites [] = []
 mark_composites list@(l:ls) = l : mark_composites (mark_every (fst l) ls)
-primes l  = fromBoolList (filterBoolList(notBoolList (mark_composites (toBoolList l))))
+seive_primes l  = fromMarked(filterUnMarked(mark_composites (unMarked l)))
+primes = seive_primes [2..]
 
 collatz :: (Integral a) => a -> [a]
 collatz 1 = [1]
@@ -219,8 +195,6 @@ collatz n = n: (collatz (next n))
           | odd n = n*3+1
           | otherwise = n `div` 2
 
-
-
 -- back tracking and propagation networks.
 -- the issue is drop every is issuing drops on new size list
 -- while we want to drop on the index position of the old list
@@ -228,10 +202,7 @@ collatz n = n: (collatz (next n))
 --fibs_from f1 f2  = fibs_from
 -- mode l = ?
 --median l =  ((fromIntegral (length l)) / 2)
-{-- 
-Some gap in knowledge here 
-instance Show Tree a where
-  show t = case t of 
-               (Leaf v) -> "("++ show v ++")"
-               (Branch l r) -> "("++show l++ "," ++ show r ")"
+{-- Some gap in knowledge here instance Show Tree a where show t =
+rcase t of (Leaf v) -> "("++ show v ++")" (Branch l r) -> "("++show l++
+"," ++ show r ")"
 --}

@@ -6,7 +6,7 @@ import qualified Data.Map as M
 import Data.List
 import System.IO
 import System.IO.Error
-import Text.ParserCombinators.Parsec
+
 
 
 {- Problem 1

@@ -42,6 +42,7 @@
 *** I wish one there was someone who wrote some version of haskell shell the same way someone has written a bash shell spase syntax makes it a powerful env.
 
 ** MetaNotes
+*** Every time software saves you a second of thought it gives a second of pleasure.
 *** In the end any real world language and application has to interact maximally with many things
 *** While thinking about things in the abstract is very helpful in mathematically thinking about a problem
 *** If you can call haskell process with functions and buffer regions then it can be super useful for you

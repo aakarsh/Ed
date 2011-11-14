@@ -51,5 +51,7 @@ drop_every n l =  drop_every' n l 1
   We apply each function to the input then apply the joinBy function to coalesce the list. 
 -}
 applyFunctionsJoin joinBy functionList input =  joinBy $ zipWith ($) functionList  $ repeat input  
+{- Ways to combine predicate function lists -}
 andP  predicates input =  applyFunctionsJoin and  predicates input
 orP  predicates input =  applyFunctionsJoin or predicates input
+notP = map (not .) 

@@ -1,17 +1,23 @@
+{- 
+Andrew Lang : An unsophisticated forecaster uses statistics as a drunken man uses
+             lamp-posts - for support rather than for illumination.
+-}
 module Statistics (
      length' ,
      median ,
      mode ,
      standard_deviation ,
      range ,
+     group_by_frequency,
   ) where 
 
 import qualified Data.Map as M
 import Common
+import Strings as S
 import Data.List
 import System.IO
 import System.IO.Error
-import Text.ParserCombinators.Parsec
+
 
 
 --length is messed up returns Int                
@@ -33,15 +39,22 @@ median l  =  let sorted_list = sort l
 {-- 
 Does not work very well for multimodal
 --}
-mode :: Ord a => [a] -> a
-mode l = let frequency_map = M.toList (mode' l M.empty )
-             frequency_compare y1 y2 = compare (snd y1) (snd y2)
-         in 
-          fst $ maximumBy frequency_compare frequency_map
-  where
-    mode' [] freq_map = freq_map
-    mode' (l:ls) freq_map = mode' ls (M.insertWith' (+) l 1 freq_map)
 
+frequency_map l = M.toList $ frequency_map' l M.empty
+  where
+    frequency_map' [] map = map
+    frequency_map' list@(l:ls) map = frequency_map' ls (M.insertWith' (+) l 1 map)
+
+mode :: Ord a => [a] -> a
+mode l = let frequency_compare y1 y2 = compare (snd y1) (snd y2)
+         in 
+          fst $ maximumBy frequency_compare $ frequency_map l
+
+group_by_frequency l = groupBy (\x y  -> (snd x) == (snd y))   $ frequency_map l
+
+-- where is there support for stemming
+-- this is all such bull shit reinventing the wheel badly
+word_frequency content = group_by_frequency  $ (map S.toLower )$ words content
 
 standard_deviation [] =  0 
 standard_deviation l = let mean = mean' l
