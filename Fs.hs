@@ -29,8 +29,6 @@ filteredDirList dir  = do filepaths <- getDirectoryContents dir
     negfilterList = [tempFileP, hiddenFileP ,directoryP , parentP]
     filterBy filePath = andP (notP negfilterList)  $  filePath
 
-                  
-
 
 withContent fileName action =   do h <- catch (openFile fileName ReadMode) errorHandler
                                    content <- hGetContents h
@@ -38,20 +36,6 @@ withContent fileName action =   do h <- catch (openFile fileName ReadMode) error
   where 
     errorHandler = (\e -> do ioError (userError ("Cannot Open File "++ fileName ++ ", you fool !\n" ++ show e)))
 
-
-
-number_lines content = number_lines' (lines content) 1
-  where 
-    number_lines' [] a = []
-    number_lines' (l:ls) a = ((show a ) ++ " : "++ l ): number_lines' ls (a+1)
-
-
-cat filename = withContent filename action
-  where action content = putStr $ content ++"\n"  
-
--- some suble bug here always gives me size 0 instead of telling me the true type.
-wc filename = withContent filename action 
-  where action content = putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
 
 withLine filename lineFunction = withContent filename linesFunction
   where linesFunction lines =  return $ map lineFunction lines
@@ -63,7 +47,24 @@ withLines filename linesFunction = withContent filename contentAction
 filterLines filename filterFunction  = withLines filename $ filter (filterFunction)
 
 --Gah!  you cant beat text streams | command interpretor combination<
+-- some suble bug here always gives me size 0 instead of telling me the true type.
 
+cat filename = withContent filename action
+  where action content = putStr $ content ++"\n"  
+
+
+
+wc filename = withContent filename action 
+  where action content = putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
+        
+        
 cat1 filename = withContent filename action
   where 
     action content = putStr $ content ++ "\n"
+
+
+number_lines content = number_lines' (lines content) 1
+  where 
+    number_lines' [] a = []
+    number_lines' (l:ls) a = ((show a ) ++ " : "++ l ): number_lines' ls (a+1)
+

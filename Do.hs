@@ -167,8 +167,6 @@ greet = do yes <- (yesNo "Have a name")
 os_messages = cat "/var/log/messages"
 os_proc_vmstat = cat "/proc/vmstat"
 
-main :: IO()  
-main = greet
 
 
 {- 
