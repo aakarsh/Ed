@@ -6,7 +6,10 @@ module Fs (
   filteredDirList,
   cat,
   number_lines,
-  wc
+  wc,
+  withContent,
+  withLine,
+  withLines
   ) where
 
 import Common
@@ -30,9 +33,9 @@ filteredDirList dir  = do filepaths <- getDirectoryContents dir
     filterBy filePath = andP (notP negfilterList)  $  filePath
 
 
-withContent fileName action =   do h <- catch (openFile fileName ReadMode) errorHandler
-                                   content <- hGetContents h
-                                   action content 
+withContent fileName action =do h <- catch (openFile fileName ReadMode) errorHandler
+                                content <- hGetContents h
+                                action content 
   where 
     errorHandler = (\e -> do ioError (userError ("Cannot Open File "++ fileName ++ ", you fool !\n" ++ show e)))
 
@@ -47,12 +50,10 @@ withLines filename linesFunction = withContent filename contentAction
 filterLines filename filterFunction  = withLines filename $ filter (filterFunction)
 
 --Gah!  you cant beat text streams | command interpretor combination<
--- some suble bug here always gives me size 0 instead of telling me the true type.
+--Some suble bug here always gives me size 0 instead of telling me the true type.
 
 cat filename = withContent filename action
   where action content = putStr $ content ++"\n"  
-
-
 
 wc filename = withContent filename action 
   where action content = putStrLn (foldl (\line acc -> line++"\n"++acc) "\n" (number_lines content))
@@ -61,7 +62,6 @@ wc filename = withContent filename action
 cat1 filename = withContent filename action
   where 
     action content = putStr $ content ++ "\n"
-
 
 number_lines content = number_lines' (lines content) 1
   where 

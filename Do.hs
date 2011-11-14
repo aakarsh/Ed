@@ -157,26 +157,14 @@ greet = do yes <- (yesNo "Have a name")
              then do name <- (readName)
                      putStr $ "Hey! "++ name ++ "\n"                                     
              else return ()                  
--- do { contents <- ((openFile "/etc/passwd" ReadMode) >>= hGetContents ); putStr contents}
--- do { contents <- ((openFile "/etc/passwd" ReadMode) >>= hGetContents ); putStr $ "Length : "++ (show $ (length contents)) ++  "\n"}
--- cat filename = 
---   do h <- (openFile filename ReadMode) 
---      content <- hGetContents h
---      putStr $ content ++ "\n"                    
-
 os_messages = cat "/var/log/messages"
 os_proc_vmstat = cat "/proc/vmstat"
 
 
-
-{- 
-Prime numbers are recursive in the sense
-that their previous input is everything 
-that got missed by their current.
-Seive Works by dropping ever nth where nths 
-is the previous run of sieve on the input
-the seive is done when 
--}
+{- Prime numbers are recursive in the sense that their previous input
+is everything that got missed by their current.  Seive Works by
+dropping ever nth where nths is the previous run of sieve on the input
+the seive is done when -}
 
 {-
    Believe it or not this implements prime seive we mark all composites up the primes.
@@ -193,9 +181,6 @@ collatz n = n: (collatz (next n))
           | odd n = n*3+1
           | otherwise = n `div` 2
 
--- back tracking and propagation networks.
--- the issue is drop every is issuing drops on new size list
--- while we want to drop on the index position of the old list
   
 --fibs_from f1 f2  = fibs_from
 -- mode l = ?

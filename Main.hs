@@ -17,3 +17,4 @@ show_banner = cat "./banner.txt"
 
 main :: IO()  
 main = show_banner
+{-- Drop into command interpretor ? --}

@@ -42,6 +42,10 @@
 *** I wish one there was someone who wrote some version of haskell shell the same way someone has written a bash shell spase syntax makes it a powerful env.
 
 ** MetaNotes
+*** back tracking and propagation networks.
+*** the issue is drop every is issuing drops on new size list
+*** while we want to drop on the index position of the old list
+*** Your aim should be able to transcend programming languages - if a construct doesnt exist add it etc.
 *** Every time software saves you a second of thought it gives a second of pleasure.
 *** In the end any real world language and application has to interact maximally with many things
 *** While thinking about things in the abstract is very helpful in mathematically thinking about a problem
@@ -81,7 +85,7 @@
    :undef <cmd>                undefine user-defined command :<cmd>
    :!<command>                 run the shell command <command>
 
- -- Commands for debugging:
+ *** Commands for debugging:
 
    :abandon                    at a breakpoint, abandon current computation
    :back                       go back in the history (after :trace)
@@ -105,7 +109,7 @@
    :trace                      trace after stopping at a breakpoint
    :trace <expr>               evaluate <expr> with tracing on (see :history)
 
- -- Commands for changing settings:
+ *** Commands for changing settings:
 
    :set <option> ...           set options
    :set args <arg> ...         set the arguments returned by System.getArgs
@@ -125,7 +129,7 @@
                     for GHCi-specific flags, see User's Guide,
                     Flag reference, Interactive-mode options
 
- -- Commands for displaying information:
+ *** Commands for displaying information:
 
    :show bindings              show the current bindings made at the prompt
    :show breaks                show the active breakpoints
