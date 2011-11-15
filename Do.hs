@@ -4,6 +4,13 @@
 module Do where 
 
 import qualified Data.Map as M
+import Control.Monad
+import Data.Maybe
+import Control.Exception
+import Control.Monad
+import Data.List
+import Data.Maybe
+import Data.Char
 import Common
 import MarkedList
 import Fs
@@ -14,6 +21,11 @@ import System.IO
 import System.Cmd
 import System.Directory
 import Control.Exception
+import Strings as S
+
+import qualified Data.ByteString.Lazy as BSL
+import qualified Data.ByteString as BS
+
 {-
 import Text.ParserCombinators.Parsec
 
@@ -179,9 +191,24 @@ collatz 1 = [1]
 collatz n = n: (collatz (next n))
   where next n 
           | odd n = n*3+1
-          | otherwise = n `div` 2
+          | otherwise = n `div` 2  
 
-  
+{- Haskell , Pascal , Raskcal -}
+readHaiku = do fh <- openFile "haiku.txt" ReadMode
+               haiku <- hGetContents fh
+               putStr $ decorate_lines haiku
+
+{- wouldnt it be great if the compiler looks back at all the functions
+ we have applied on the thing reads or does only what is required -}
+-- Not ideas since it needs to read all lines
+decorate_lines s =  let l = length $ maximumBy (compareBy length)  (lines s)
+                        d="~"
+                        line =  concat $ replicate l d
+                    in
+                     line++"\n"++s++line++"\n"
+  where
+    compareBy f x y = compare  (f x) (f y)
+                     
 --fibs_from f1 f2  = fibs_from
 -- mode l = ?
 --median l =  ((fromIntegral (length l)) / 2)

@@ -1,15 +1,15 @@
 module Main 
        where
 
-import Statistics 
-import Fs 
-import Euler 
-import Do 
-import MarkedList
-import Geometry 
-import MarkedList
-import  Strings as S
-import Common 
+import Custom.Statistics 
+import Custom.Fs 
+import Custom.Euler 
+import Custom.Do 
+import Custom.MarkedList
+import Custom.Geometry 
+import Custom.MarkedList
+import Custom. Strings as S
+import Custom.Common 
 
 
 
