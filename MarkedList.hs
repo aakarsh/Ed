@@ -7,9 +7,12 @@ module MarkedList(
   mark_every,
   mark,
   ) where
+
 import Common
 
-mark (a,_)=(a,True)
+
+
+mark (a,_)=(a,True)           
 mark_every n l = fevery mark n l
 zipWithBool = zipWith (flip (,)) (repeat False)
 filterMarked l = filter (\(x,y)-> y) l

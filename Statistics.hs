@@ -1,7 +1,5 @@
-{- 
-Andrew Lang : An unsophisticated forecaster uses statistics as a drunken man uses
-             lamp-posts - for support rather than for illumination.
--}
+{- Andrew Lang : An unsophisticated forecaster uses statistics as a drunken man uses lamp-posts - for support rather than for illumination. -}
+
 module Statistics (
      length' ,
      median ,
