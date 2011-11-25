@@ -93,5 +93,74 @@ edPrompt = do putStr ">"
   where
     flush = hFlush stdout
 
+data Tree a = Branch a (Tree a) (Tree a)| Leaf a
+--data Cons a = Cons ( |  StackEnd
+--[]
+
+basic_tree 1 = (Branch 1 (Branch 2 (Leaf 1) (Leaf 3)) (Leaf 1))
+basic_tree 2 = (Branch 1 (Leaf 2) (Branch 2  (Branch 2 (Leaf 1) (Leaf 3)) (Leaf 1)))
+
+tree_sum (Branch v left right ) =  v+(tree_sum left) + (tree_sum right)
+tree_sum (Leaf v ) = v
+
+--tree_fold f i (Branch v left right ) =  f v (tree_fold f i left) (tree_fold f i right)
+--tree_fold f  i (Leaf  v ) =  f v i
+count_input_len = do line <- fmap (length) getLine
+                     putStrLn $ "You entered "++(show line )++ " characters"
+
+instance (Show a)=> Show (Tree a) where
+     show (Branch a left right ) =show a++":(" ++ show left ++ ","++show right ++ ")"
+     show (Leaf a) = show a
+
+instance Functor  (Tree)  where
+         fmap f (Leaf a) = Leaf $ f a
+         fmap f (Branch a left right) = Branch (f a) (fmap f left) (fmap f right)
+
+
+forever' pre x post = do pre; 
+                         x; 
+                         post;
+                         forever' pre x post
+                
+confirm what = do putStr $ "Are you sure you want to "++what ++" [y/n] "; 
+                  (y:ys) <- getLine;
+                  if y == 'y' || y == 'Y'
+                    then
+                    return True
+                    else
+                    return False
+               
+genie_ask = putStrLn "What do you want master ?" 
+genie_inform = putStrLn "Done!! Wish your wish has be fulfilled!";
+genie x = forever' genie_ask (putStrLn "") genie_inform
+
+repeat' 0 action = return ()
+repeat' n action = action >> repeat' (n-1) action
+
+for [] fa = return ()
+for (n:ns) fa = fa n >> for ns fa
+
+print_alphabet = for (['a'..'z']++"\n") (putChar)
+{-
+take_chars (c:[]) = do return  c:[]
+take_chars (c:cs)= do c <-getChar
+                      r<-fmap (c:) (take_chars cs)
+                      return fmap (c:) r
+-}
+{--
+collect' 0 action = return []
+collect' n action = action>>== result : (collect' (n-1) action)
+-}
+
+{-
+doubting_genie = forever' ask (putStrLn) inform
+  where ask = do { genie_ask ;
+                   answer <- getLine;
+                   return $confirm answer;
+                   }
+        inform =  genie_inform
+-}                   
+                            
+        
 main :: IO()    
 main = ed  

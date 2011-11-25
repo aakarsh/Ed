@@ -1,0 +1,21 @@
+** Shortcuts
+*** C-c C-t - show type
+*** C-c C-l - load haskell code in interpretor
+*** C-c C-c - Compile ed
+*** M-.     - find in ghc-7.1 source
+*** M-,     - continue find
+*** M-*     - pop stack
+*** M-x hoogle
+
+** Snippets
+***
+
+** Links
+*** http://www.learnyouahaskell.org
+
+** Interpretor Help
+*** :t - show type
+
+** Conkeror Help
+*** hg - look up google
+

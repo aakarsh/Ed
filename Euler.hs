@@ -31,6 +31,7 @@ fib n = fib (n-1) + fib (n-2)
 -}
 
 fibs = 1: 2 :(zipWith (+) fibs (tail fibs))
+
 p2 =sum $ takeWhile (<4000000) $ filter even fibs
 
 {- Problem 3 :

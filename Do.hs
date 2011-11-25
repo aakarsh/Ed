@@ -5,9 +5,11 @@ module Do where
 
 import qualified Data.Map as M
 import Control.Monad
+import Data.Monoid
 import Data.Maybe
 import Control.Exception
 import Control.Monad
+import Control.Applicative
 import Data.List
 import Data.Maybe
 import Data.Char
@@ -191,7 +193,8 @@ collatz 1 = [1]
 collatz n = n: (collatz (next n))
   where next n 
           | odd n = n*3+1
-          | otherwise = n `div` 2  
+          | otherwise = n `div` 2        
+          
 
 {- Haskell , Pascal , Raskcal -}
 readHaiku = do fh <- openFile "haiku.txt" ReadMode
@@ -209,6 +212,66 @@ decorate_lines s =  let l = length $ maximumBy (compareBy length)  (lines s)
   where
     compareBy f x y = compare  (f x) (f y)
                      
+
+greetings people = (++)  <$>  ["hi ","hello ","bonjorno "] <*> people
+
+factorial 0 = 1
+factorial n = foldl (*) 1 [1..n]
+
+ziplist_example = getZipList $ ZipList [(+1) , (*100) , (*4)] <*> ZipList [1,2,3]
+power_list n p = getZipList $  (((^) <$> ZipList [1..n]))<*> ZipList (replicate 10 p)
+
+combination' n r 
+  | r > n     = 0
+  | otherwise =  (factorial n) /( (factorial (n-r)) * (factorial r))
+
+
+
+multinomial n r = round $ (factorial n) /(fold_multiply $ factorialize r)
+  where fold_multiply  =  foldl (*)  1 
+        factorialize = map factorial
+
+combination n r = multinomial n [n-r,r]
+
+-- need to make 3 digit arrangements
+limited_arrangements r [] = []
+{-
+basically what i want is 
+while r 0 
+head list + second list + [r is 2 third item take subsequents append to begininning and end of them also nub ]  + [r is 1] subsequents will be just array of the rest of the list  ]
+-}
+limited_arrangements 1 list = map (:[]) list
+limited_arrangements r list@(l:ls)= let subsequent = limited_arrangements (r-1) ls
+                                    in   
+                                     nubBy (==)$ map (intersperse l) subsequent ++(add2front l subsequent )++(add2back l subsequent)
+  where    add2front l = map (l:) 
+           add2back l = map (\s-> s++[l])  
+  
+
+
+make_arrangements [] = [[]]
+make_arrangements (l:[]) = [[l]]
+make_arrangements  (l:ls) =let subsequent = make_arrangements ls 
+                           in   
+                            nubBy (==)$  (map (intersperse l) subsequent) ++ (add2front l subsequent ) ++ (add2back l subsequent)
+  where    add2front l = map (l:) 
+           add2back l = map (\s-> s++[l])
+
+
+count_arrangements list = let sorted_list = sort list
+                              ln = fromIntegral $ length list
+                              frequency_list = map (\x -> ((head x),fromIntegral $ length x)) $ groupBy (==) $ sorted_list
+                              values (_,val) = val
+                          in
+                           multinomial ln (map values frequency_list)
+                           
+binomial_coeficients n = map (combination n) [0..n] 
+
+pascal_triangle n = mapM_ print $ map binomial_coeficients [1..n]
+  where print = putStrLn.show 
+
+toBools = map (>0) 
+
 --fibs_from f1 f2  = fibs_from
 -- mode l = ?
 --median l =  ((fromIntegral (length l)) / 2)
